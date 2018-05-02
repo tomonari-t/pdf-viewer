@@ -11,6 +11,7 @@ const eslintFormatter = require('react-dev-utils/eslintFormatter');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const getClientEnvironment = require('./env');
 const paths = require('./paths');
+const glob = require('glob');
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
@@ -168,6 +169,12 @@ module.exports = {
               },
               {
                 loader: require.resolve('sass-loader'),
+                options: {
+                  includePaths: [
+                    paths.appNodeModules,
+                    path.join(paths.appNodeModules, '/material-components-web/dist/material-components-web.min.css')
+                  ]
+                }
               },
               {
                 loader: require.resolve('postcss-loader'),
