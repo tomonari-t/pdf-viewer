@@ -158,7 +158,7 @@ module.exports = {
           // In production, we use a plugin to extract that CSS to a file, but
           // in development "style" loader enables hot editing of CSS.
           {
-            test: /\.scss$/,
+            test: /\.scss|css$/,
             use: [
               require.resolve('style-loader'),
               {
@@ -171,8 +171,7 @@ module.exports = {
                 loader: require.resolve('sass-loader'),
                 options: {
                   includePaths: [
-                    paths.appNodeModules,
-                    path.join(paths.appNodeModules, '/material-components-web/dist/material-components-web.min.css')
+                    paths.appNodeModules
                   ]
                 }
               },
