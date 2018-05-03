@@ -30,6 +30,23 @@ const styles = {
 
 class PDFViewerComponent extends React.Component {
 
+  state = {
+    scale: 1.5,
+    pdfDoc: null
+  }
+
+  zoomUp = () => {
+    this.setState({ scale: this.state.scale + 0.1});
+    this.renderPDF();
+  }
+
+  zoomDown = () => {
+    if (this.state.scale > 0) {
+      this.setState({ scale: this.state.scale - 0.1});
+      this.renderPDF();
+    }
+  }
+
   renderTextLayer = async (pageContainer, page, viewport) => {
       const textContent = await page.getTextContent();
       const textLayerDiv = document.createElement('div');
@@ -44,10 +61,22 @@ class PDFViewerComponent extends React.Component {
       });
   }
 
+  renderPDF = async () => {
+    if (this.state.pdfDoc) {
+      this.refs.canvasContainer.innerHTML = '';
+    } else {
+      this.state.pdfDoc = await PDFJS.getDocument({
+        url: sample_1_pdf,
+        cMapUrl: CMAP_URL,
+        cMapPacked: true,
+      });
+    }
+    await this.renderPages(this.state.pdfDoc);
+  }
+
   renderPages = async (pdfDoc) => {
     for (let num = 1; num <= pdfDoc.numPages; num++) {
       const page = await pdfDoc.getPage(num);
-      const scale = 1.5;
       const canvasContaier = this.refs.canvasContainer;
       const div = document.createElement('div');
       div.setAttribute('id', `page-${page.pageIndex + 1}`);
@@ -58,7 +87,7 @@ class PDFViewerComponent extends React.Component {
       div.appendChild(canvas);
 
       const context = canvas.getContext('2d');
-      const viewport = page.getViewport(scale);
+      const viewport = page.getViewport(this.state.scale);
       canvas.height = viewport.height;
       canvas.width = viewport.width;
       const renderContext = {
@@ -72,34 +101,30 @@ class PDFViewerComponent extends React.Component {
   }
 
   componentDidMount = async () => {
-    const pdfDoc = await PDFJS.getDocument({
-      url: sample_1_pdf,
-      cMapUrl: CMAP_URL,
-      cMapPacked: true,
-    });
-    await this.renderPages(pdfDoc);
+    this.renderPDF();
   }
 
   render() {
     const classes = this.props.classes;
     return (
-      <div
-        className={classes.container}
-        id="canvasContainer"
-        ref="canvasContainer">
+      <div className={classes.container}>
+        <div
+          id="canvasContainer"
+          ref="canvasContainer">
+        </div>
         <div className={classes.btnContainer}>
           <div className={classes.btn}>
-            <Button mini="true" variant="fab" color="primary" aria-label="add" className={classes.button}>
+            <Button mini={true} variant="fab" color="primary" aria-label="add" className={classes.button}>
               <NavigateBeforeIcon />
             </Button>
           </div>
           <div className={classes.btn}>
-            <Button mini="true" variant="fab" color="primary" aria-label="add" className={classes.button}>
+            <Button onClick={this.zoomUp} mini={true} variant="fab" color="primary" aria-label="add" className={classes.button}>
               <AddIcon />
             </Button>
           </div>
           <div className={classes.btn}>
-            <Button mini="true" variant="fab" color="primary" aria-label="add" className={classes.button}>
+            <Button onClick={this.zoomDown}  mini={true} variant="fab" color="primary" aria-label="add" className={classes.button}>
               <RemoveIcon />
             </Button>
           </div>
