@@ -1,13 +1,16 @@
 import React from 'react';
 import * as PDFJS from 'pdfjs-dist';
-import sample_1_pdf from '../../pdf/sample_2.pdf';
+import sample_1_pdf from '../../pdf/sample_4.pdf';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import { withStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
-import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
-import Icon from 'material-ui/Icon';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
+import AddIcon from '@material-ui/icons/Add';
+import SelectedIcons from '../SelectedIcons/SelectedIcons';
+import { inject, observer } from 'mobx-react';
+import PDFController from '../PDFController/PDFController';
+import { autorun } from 'mobx';
 
 const CMAP_URL = '/cmaps/';
 
@@ -28,23 +31,57 @@ const styles = {
   }
 };
 
+// get Rect
+const getSelectionRects = () => {
+  const selection = window.getSelection();
+  const range = selection.getRangeAt(0);
+  const rects = range.getClientRects();
+
+  if (rects.length > 0 && rects[0].width > 0 && rects[0].height > 0) {
+    return rects;
+  } else {
+    return null;
+  }
+};
+
+const handleDocumentMouseup = (e) => {
+  const rect = getSelectionRects();
+  if (!rect) {
+    return;
+  }
+  const { height, width, x, y } = rect[0];
+};
+
+const addEventListner = () => {
+  document.addEventListener('mouseup', handleDocumentMouseup);
+};
+
+const removeEventListener = () => {
+  document.removeEventListener('mouseup', handleDocumentMouseup);
+};
+
+@inject('pdfViewer')
+@observer
 class PDFViewerComponent extends React.Component {
 
-  state = {
-    scale: 1.5,
-    pdfDoc: null
-  }
 
   zoomUp = () => {
-    this.setState({ scale: this.state.scale + 0.1});
+    this.props.pdfViewer.scaleUp();
     this.renderPDF();
   }
 
   zoomDown = () => {
-    if (this.state.scale > 0) {
-      this.setState({ scale: this.state.scale - 0.1});
+    if (this.props.pdfViewer.scale > 0) {
+      this.props.pdfViewer.scaleDown();
       this.renderPDF();
     }
+  }
+
+  renderAnnotationLayer = async (pageContainer, page, viewport) => {
+    const annotationLayer = document.createElement('div');
+    annotationLayer.setAttribute('class', 'annotationLayer');
+    annotationLayer.setAttribute('style',  `width: ${viewport.width}px; height: ${viewport.height}px; margin: 0 auto;`);
+    pageContainer.appendChild(annotationLayer);
   }
 
   renderTextLayer = async (pageContainer, page, viewport) => {
@@ -62,16 +99,17 @@ class PDFViewerComponent extends React.Component {
   }
 
   renderPDF = async () => {
-    if (this.state.pdfDoc) {
+    const pdfDoc = this.props.pdfViewer.pdfDoc;
+    if (pdfDoc) {
       this.refs.canvasContainer.innerHTML = '';
     } else {
-      this.state.pdfDoc = await PDFJS.getDocument({
+      this.props.pdfViewer.pdfDoc = await PDFJS.getDocument({
         url: sample_1_pdf,
         cMapUrl: CMAP_URL,
         cMapPacked: true,
       });
     }
-    await this.renderPages(this.state.pdfDoc);
+    await this.renderPages(this.props.pdfViewer.pdfDoc);
   }
 
   renderPages = async (pdfDoc) => {
@@ -87,7 +125,7 @@ class PDFViewerComponent extends React.Component {
       div.appendChild(canvas);
 
       const context = canvas.getContext('2d');
-      const viewport = page.getViewport(this.state.scale);
+      const viewport = page.getViewport(this.props.pdfViewer.scale);
       canvas.height = viewport.height;
       canvas.width = viewport.width;
       const renderContext = {
@@ -100,35 +138,33 @@ class PDFViewerComponent extends React.Component {
     }
   }
 
+  getPDFMeta = async () => {
+    const data = await this.props.pdfViewer.pdfDoc.getMetadata();
+    console.log('============');
+    console.log(data);
+    console.log('============');
+  }
+
   componentDidMount = async () => {
-    this.renderPDF();
+    await this.renderPDF();
+    await this.getPDFMeta();
+    addEventListner();
+  }
+
+  componentWillUnmount = () => {
+    removeEventListener();
   }
 
   render() {
     const classes = this.props.classes;
     return (
       <div className={classes.container}>
+        <SelectedIcons />
         <div
           id="canvasContainer"
           ref="canvasContainer">
         </div>
-        <div className={classes.btnContainer}>
-          <div className={classes.btn}>
-            <Button mini={true} variant="fab" color="primary" aria-label="add" className={classes.button}>
-              <NavigateBeforeIcon />
-            </Button>
-          </div>
-          <div className={classes.btn}>
-            <Button onClick={this.zoomUp} mini={true} variant="fab" color="primary" aria-label="add" className={classes.button}>
-              <AddIcon />
-            </Button>
-          </div>
-          <div className={classes.btn}>
-            <Button onClick={this.zoomDown}  mini={true} variant="fab" color="primary" aria-label="add" className={classes.button}>
-              <RemoveIcon />
-            </Button>
-          </div>
-        </div>
+        <PDFController />
       </div>
     );
   }
