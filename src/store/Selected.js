@@ -50,7 +50,6 @@ export default class SelectedStore {
     const rects = [];
     for (let i = 0; i < rectsNum; i++) {
       const rect = this.selectedRects[i];
-      console.log(rect);
       rects.push({
         height: Math.ceil(rect.height / scale),
         width: Math.ceil(rect.width / scale),

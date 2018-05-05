@@ -5,14 +5,16 @@ import * as PDFJS from 'pdfjs-dist';
 import { withStyles } from 'material-ui';
 
 const styles = {
+  pageContainer: {
+    position: 'relative'
+  },
   annotationLayer: {
     position: 'absolute',
-    left: 0,
     top: 0,
-    right: 0,
-    bottom: 0,
+    left: 0,
     overflow: 'hidden',
-    lineHeight: 1.0
+    lineHeight: 1.0,
+    margin: '0 auto'
   }
 };
 
@@ -58,7 +60,7 @@ class PDFPage extends React.Component {
     const annotations = this.props.selected.annotations.peek();
     if (this.refs.annotationLayer) {
       this.refs.annotationLayer.innerHTML = '';
-      this.refs.annotationLayer.setAttribute('style',  `width: ${Math.ceil(this.props.pdfViewer.viewport.width)}px; height: ${Math.ceil(this.props.pdfViewer.viewport.height)}px; margin: 0 auto;`);
+      this.refs.annotationLayer.setAttribute('style',  `width: ${Math.ceil(this.props.pdfViewer.viewport.width)}px; height: ${Math.ceil(this.props.pdfViewer.viewport.height)}px;`);
       const scale = this.props.pdfViewer.scale;
       annotations.forEach(annotation => {
         const page = annotation.pageNum;
@@ -76,7 +78,7 @@ class PDFPage extends React.Component {
             rect.setAttribute('x', rectInfo.x * scale);
             rect.setAttribute('y', rectInfo.y * scale);
             group.appendChild(rect);
-          })
+          });
           this.refs.annotationLayer.appendChild(group);
         }
       });
@@ -117,7 +119,7 @@ class PDFPage extends React.Component {
     const classes = this.props.classes;
     const pageNum = this.props.pageNum;
     return (
-      <div ref="container" id={`page-${pageNum}`} data-page={pageNum} style={{'position': 'relative'}}>
+      <div ref="container" id={`page-${pageNum}`} data-page={pageNum} className={classes.pageContainer}>
         <canvas ref="canvas" style={{display: 'block', margin: '0 auto'}}></canvas>
         <svg ref="annotationLayer" className={classes.annotationLayer}></svg>
         <div ref="textLayer" className="textLayer"></div>
