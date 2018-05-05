@@ -12,6 +12,9 @@ const styles = {
     position: 'relative',
     overflowX: 'auto',
     overflowY: 'hidden'
+  },
+  canvasContainer: {
+    position: 'relative'
   }
 };
 
@@ -38,11 +41,11 @@ class PDFViewerComponent extends React.Component {
     const pages = this.renderPagesElement(pdfDoc);
     return (
       <div className={classes.container}>
-        <SelectedIcons />
-        <div id="canvasContainer" ref="canvasContainer">
+        <PDFController />
+        <div id="canvasContainer" className={classes.canvasContainer} ref="canvasContainer">
+          <SelectedIcons />
           {pages}
         </div>
-        <PDFController />
       </div>
     );
   }

@@ -17,7 +17,7 @@ const stores = {
 
 const theme = createMuiTheme()
 ReactDOM.render(
-  <MuiThemeProvider muiTheme={theme}>
+  <MuiThemeProvider theme={theme}>
     <Provider {...stores}>
       <App />
     </Provider>
