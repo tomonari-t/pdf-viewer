@@ -1,11 +1,16 @@
-import { observable, action } from "mobx";
+import { observable, action, computed } from "mobx";
 
 export default class SelectedStore {
   //
-  @observable selectedRect = null;
+  @observable selectedRects = null;
   @observable isShow = false;
 
-  set selectedRect(rect) {
-    this.selectedRect = rect;
+
+  @computed
+  setReact(rects) {
+    this.selectedRects = rects;
+    if (rects) {
+
+    }
   }
 }

@@ -55,15 +55,13 @@ class App extends React.Component {
         </AppBar>
         <Grid
           container spacing={0}
-          className={this.props.classes.content}
-        >
+          className={this.props.classes.content}>
           <Grid item xs={9}>
             <PDFViewerComponent />
           </Grid>
           <Grid
             item xs={3}
-            className={classes.pdfcomment}
-          >
+            className={classes.pdfcomment}>
             <PDFComment></PDFComment>
           </Grid>
         </Grid>
