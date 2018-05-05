@@ -8,6 +8,7 @@ export default class PDFViewerStore {
   @observable _scale = 1.5;
   @observable _pdfDoc = null;
   @observable _pages = null;
+  @observable _viewport = null;
 
   constructor () {
     this.getPDFDocument();
@@ -43,13 +44,13 @@ export default class PDFViewerStore {
 
   @action
   scaleUp = () => {
-    this.scale = this.scale + 0.1;
+    this.scale = ((this.scale * 10) + 1) / 10;
   }
 
   @action
   scaleDown = () => {
     if (this.scale > 0) {
-      this.scale = this.scale - 0.1;
+      this.scale = ((this.scale * 10) - 1) / 10;
     }
   }
 
@@ -60,4 +61,13 @@ export default class PDFViewerStore {
   set pdfDoc (doc) {
     this._pdfDoc = doc;
   }
+
+  get viewport () {
+    return this._viewport;
+  }
+
+  set viewport (vp) {
+    this._viewport = vp;
+  }
+
 }

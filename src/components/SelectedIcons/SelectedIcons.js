@@ -35,6 +35,10 @@ class SelectedIconsComponent extends React.Component {
     return { x, y };
   }
 
+  createLineMark = () => {
+    this.props.selected.saveLineMark(this.props.pdfViewer.scale);
+  }
+
   render() {
     const classes = this.props.classes;
     const selectedRects = this.props.selected.getSelectedRects();
@@ -45,6 +49,7 @@ class SelectedIconsComponent extends React.Component {
         <div className={classes.buttonsContaier} style={buttonPosition}>
           <IconButton
             className={classes.small}
+            onClick={this.createLineMark}
           >
             <BorderColorIcon />
           </IconButton>
