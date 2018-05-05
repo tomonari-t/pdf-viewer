@@ -20,7 +20,7 @@ const styles = {
     flex: 1,
   },
   content: {
-    paddingTop: 64
+    paddingTop: 64,
   },
   pdfcomment: {
     minHeight: '100vh'
@@ -55,9 +55,9 @@ class App extends React.Component {
         </AppBar>
         <Grid
           container spacing={0}
-          className={this.props.classes.content}>
+          className={classes.content}>
           <Grid item xs={9}>
-            <PDFViewerComponent />
+            <PDFViewerComponent/>
           </Grid>
           <Grid
             item xs={3}

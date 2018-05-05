@@ -1,53 +1,18 @@
 import React from 'react';
-import * as PDFJS from 'pdfjs-dist';
-import sample_1_pdf from '../../pdf/sample_4.pdf';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import { withStyles } from 'material-ui/styles';
 import SelectedIcons from '../SelectedIcons/SelectedIcons';
 import { inject, observer } from 'mobx-react';
 import PDFController from '../PDFController/PDFController';
-import { autorun } from 'mobx';
 import PDFPage from './PDFPage';
-
-const CMAP_URL = '/cmaps/';
 
 const styles = {
   container: {
     width: '100%',
-    overflow: 'auto',
-    position: 'relative'
+    position: 'relative',
+    overflowX: 'auto',
+    overflowY: 'hidden'
   }
-};
-
-// get Rect
-const getSelectionRects = () => {
-  const selection = window.getSelection();
-  if (selection.rangeCount > 0) {
-    const range = selection.getRangeAt(0);
-    const rects = range.getClientRects();
-
-    if (rects.length > 0 && rects[0].width > 0 && rects[0].height > 0) {
-      return rects;
-    } else {
-      return null;
-    }
-  }
-};
-
-const handleDocumentMouseup = (e) => {
-  const rect = getSelectionRects();
-  if (!rect) {
-    return;
-  }
-  const { height, width, x, y } = rect[0];
-};
-
-const addEventListner = () => {
-  document.addEventListener('mouseup', handleDocumentMouseup);
-};
-
-const removeEventListener = () => {
-  document.removeEventListener('mouseup', handleDocumentMouseup);
 };
 
 @inject('pdfViewer')
@@ -65,14 +30,6 @@ class PDFViewerComponent extends React.Component {
       divList.push(pageDiv);
     }
     return divList;
-  }
-
-  componentDidMount = async () => {
-    addEventListner();
-  }
-
-  componentWillUnmount = () => {
-    removeEventListener();
   }
 
   render() {

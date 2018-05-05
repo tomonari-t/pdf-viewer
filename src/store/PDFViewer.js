@@ -7,7 +7,7 @@ const CMAP_URL = '/cmaps/';
 export default class PDFViewerStore {
   @observable _scale = 1.5;
   @observable _pdfDoc = null;
-  @observable _page = null;
+  @observable _pages = null;
 
   constructor () {
     this.getPDFDocument();
@@ -27,6 +27,12 @@ export default class PDFViewerStore {
     });
   }
 
+  getPage = async (num) => {
+    if (this.pdfDoc) {
+      return await this.pdfDoc.getPage(num);
+    }
+  }
+
   get scale () {
     return this._scale;
   }
@@ -42,7 +48,9 @@ export default class PDFViewerStore {
 
   @action
   scaleDown = () => {
-    this.scale = this.scale - 0.1;
+    if (this.scale > 0) {
+      this.scale = this.scale - 0.1;
+    }
   }
 
   get pdfDoc () {
